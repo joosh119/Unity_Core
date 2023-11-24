@@ -1,7 +1,7 @@
 # Unity_Core
 This Unity Core contains various helper classes and scripts, intended for use in the Unity Game Engine.
 The goal of this core is to aid in more quickly and efficiently working on projects, while still staying organized in the process.
-This core is heavily targeted towards 2D game development.
+This core is heavily targeted towards 2D game development.  
 NOTE: This repository is gradually updated as I use these scripts, so there may be issues with some of the scripts.
 
 Created by TheGreatExpanse (https://www.youtube.com/@The_Great_Expanse)
