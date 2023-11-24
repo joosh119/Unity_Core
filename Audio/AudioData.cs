@@ -1,5 +1,3 @@
-//NEW NEW NEW NEW CHANGES
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
