@@ -6,29 +6,50 @@ This core is heavily targeted towards 2D game development.
 Created by TheGreatExpanse (https://www.youtube.com/@The_Great_Expanse)
 
 
-#Dependencies:
+# Dependencies:
 - UltEvents - https://assetstore.unity.com/packages/tools/gui/ultevents-111307
 - More Effective Coroutines - https://assetstore.unity.com/packages/tools/animation/more-effective-coroutines-free-54975
 
 
 
-#CONTENTS:
-- /Audio:
-Containes Audio related scripts.
-- AudioData.cs
- - Intended to store audio data.
-- AudioManager.cs
- - To be used as a singleton and called statically.
- 
-- /Game:
-- Contains scripts designed for more specific game types.
-- Still general enough to be applied across multiple 'similar' games.
-/AI
+# CONTENTS:
+/**Audio**  
+ Contains Audio related scripts.  
+- *AudioData.cs*  
+ Intended to store audio data.  
+- *AudioManager.cs*  
+ To be used as a singleton and called statically.  
+  
 
-/Entity
+/**Game**  
+Contains scripts designed for more specific game types.  
+Still general enough to be applied across multiple 'similar' games.  
+- /**AI**  
+Contains scripts for more specific non-player behavior.  
+  - *EnemyWalkAI.cs*  
+  Makes a gameobject walk forward, until it hits a wall, in which case it turns around.
 
-/General:
+- /**Entity**  
+Contains scripts for creating gameobjects with health and the ability to take damage.  
 
-/Helpers:
+- /**Entity Effects**  
+Contains scripts for interacting with entities.  
 
-/Rendering:
+- /**Other**  
+Contains other miscellaneous scripts.  
+
+- /**Player**  
+Contains scripts for player inputs.  
+  
+
+/**General**  
+Contains scripts for general purposes.  
+
+
+/**Helpers**  
+Contains helper classes to be called from within other scripts.  
+
+/**Rendering**  
+Contains various shaders, mainly aimed at 2D use.  
+
+
