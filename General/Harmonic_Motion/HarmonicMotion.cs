@@ -65,7 +65,7 @@ public class HarmonicMotion : MonoBehaviour
         
         //Position on curve
         Vector3 ampPos = Vector3.Scale(amplitude1, sin);
-        
+
 
         //If ampPos on sin is within amplitude2
         //x

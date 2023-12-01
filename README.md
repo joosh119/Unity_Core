@@ -69,10 +69,17 @@ Contains scripts for general purposes.
 /**Helpers**  
 Contains helper classes to be called from within other scripts.  
 
+
+/**Misc_Assets**  
+Contains miscellaenous non-script assets.  
+
+
 /**Rendering**  
 Contains various shaders, mainly aimed at 2D use.  
 
 
-# Good Practices:
-- Tag all Entities as 'Entity'
-- Tag all terrain as 'Terrain'
+# Required Editor Setup:
+- Tags:  
+  - Tag all Entities as 'Entity'  
+  - Tag all terrain as 'Terrain'  
+

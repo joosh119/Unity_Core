@@ -24,6 +24,7 @@ public class HarmonicRotation : MonoBehaviour
         setBob(amplitude1, amplitude2, period);
         startTime = Time.time;
     }
+    
     public void setBob(Vector3 amplitude1, Vector3 amplitude2, Vector3 period){
         //Set base values
         this.amplitude1 = amplitude1;
