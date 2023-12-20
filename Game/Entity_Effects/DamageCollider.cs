@@ -17,8 +17,6 @@ public class DamageCollider : MonoBehaviour
             if(entity != null)
                 entity.Damage(damage);
 
-                
-            
 
             if(particlesPrefab != null){
                 GameObject particles = Instantiate(particlesPrefab, transform.position, Quaternion.identity);

@@ -5,6 +5,7 @@ public class EntityData : ScriptableObject
 {
     //Damage
     public int maxHealth;
+    //Invincibility time
     public float iTime;
     //Death
     public bool destroyOnDeath;

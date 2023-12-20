@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using static JMath.ZeroToOneFunctions;
 
+
 ///<summary>
 ///Helper class dedicated to in UI events.
 ///NOTE: All functions in this class continue working when time scale is 0.
@@ -82,6 +83,7 @@ public static class UIHelper
     public static void CallZeroToOne(Action<float> action, float time, ZeroToOneFunction zeroToOneFunction, GameObject cancelObject){
         Timing.RunCoroutine(_CallZeroToOne(action, time, zeroToOneFunction));
     }
+    
     public static IEnumerator<float> _CallZeroToOne(Action<float> action, float time, ZeroToOneFunction zeroToOneFunction){
         float t = 0;
         while(t < time){

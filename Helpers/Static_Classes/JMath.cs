@@ -156,6 +156,15 @@ public static class JMath{
         };
 
         ///<summary>
+        ///Sin wave. Returns values from 0 to the highest point of a sin curve, thus a quarter
+        ///'Upside down' relative to other QuarterSinFunction
+        ///</summary>
+        public static readonly ZeroToOneFunction _QuarterSinFunction =
+        (float x) => {
+            return 1-Mathf.Sin( (Mathf.PI/2)*(1-x) );
+        };
+
+        ///<summary>
         ///Sin wave. Returns values from the lowest to highest point of a sin curve, thus a half
         ///</summary>
         public static readonly ZeroToOneFunction HalfSinFunction = 
@@ -181,7 +190,7 @@ public static class JMath{
         ///Power function. Returns y = +/-((x - offset.x)^p + offset.y). 
         ///NOTE: Not guaranteed to return a function from zero to one. You must figure that out yourself
         ///</summary>
-        public static ZeroToOneFunction PowerFunction(float p, Vector2 offset, bool flip){
+        public static ZeroToOneFunction PowerFunction(float p, Vector2 offset, bool flip = false){
             if(!flip)
                 return (float x) => {
                     return Mathf.Pow(x - offset.x, p)  +  offset.y;  
@@ -333,6 +342,22 @@ public static class JMath{
             while(randomColor.a == 0 || WithinMinGrayTolerance(randomColor));
 
             return randomColor;
+        }
+    }
+
+
+
+     //--------------------------------------------------------
+    ///<summary>
+    ///Static class dedicated to Time related functions
+    ///</summary>
+    public static class Time{
+        ///<summary>
+        ///Check if an event, that last occurred at the given time, has past it's delay time
+        ///</summary>
+        public static bool IsPastElapsedTime(float timeOfLastAction, float delayTime){
+            float elapsed = UnityEngine.Time.time - timeOfLastAction;
+            return elapsed >= delayTime;
         }
     }
 }

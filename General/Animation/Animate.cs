@@ -6,13 +6,13 @@ public class Animate : MonoBehaviour
 {
     [SerializeField]private Sprite[] frames;
     [SerializeField]private float frameRate;
-    public SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteRenderer;
     private float lastFrameTime;
     private int currentFrame;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame

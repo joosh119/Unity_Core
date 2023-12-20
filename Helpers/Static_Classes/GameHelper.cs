@@ -5,10 +5,16 @@ using System;
 using MEC;
 
 using static JMath.ZeroToOneFunctions;
+using Unity.VisualScripting;
+using UnityEngine.Scripting;
 
 ///<summary>
 ///Helper class dedicated to in game events.
-///NOTE: All functions in this class stop working when time scale is 0.
+///NOTE: Time based functions in this class stop working when time scale is 0.
+///DEVNOTE: Fix above issue. Create a way to distinguish if the moethod should be affected by timescale or not.
+///Need fixes: ChangeFloatOverTime, ChangeVectorOverTime, ~DelayAction~, ~RepeatAction~, ~ProgressiveRepeatAction~, CallZeroToOne, MoveTo, MoveOnPath, ScaleTo, Shake1, Shake2, FadeTo, SizeTo
+///DEVNOTE: Condense multiple methods to use default arguments, instead of method overloading
+///DEVNOTE: Shake function does not slow with timescale; it should.
 ///</summary>
 public static class GameHelper
 {
@@ -75,12 +81,6 @@ public static class GameHelper
 
     //Delay--------------------------------------------------------------------------------
     ///<summary>
-    ///Delay lambda or method call by a given time, in seconds
-    ///</summary>
-    public static void DelayAction(Action action, float delay){
-        Timing.RunCoroutine(_DelayAction(action, delay));
-    }
-    ///<summary>
     ///Delay lambda or method call by a given time, in seconds. The call is cancelled if the gameobject given is destroyed
     ///</summary>
     public static void DelayAction(Action action, float delay, GameObject cancelObject){
@@ -92,6 +92,26 @@ public static class GameHelper
         action.Invoke();
     }
     
+    //TIMING
+
+    //Delay--------------------------------------------------------------------------------
+    ///<summary>
+    ///Delay lambda or method call by a given time, in seconds. The call is cancelled if the gameobject given is destroyed
+    ///</summary>
+    public static void DelayActionUnscaled(Action action, float delay, GameObject cancelObject){
+        Timing.RunCoroutine(_DelayActionUnscaled(action, delay).CancelWith(cancelObject));
+    }
+    private static IEnumerator<float> _DelayActionUnscaled(Action action, float delay){
+        float startTime = Time.unscaledTime;
+        do{
+            yield return Timing.WaitForOneFrame;
+        }
+        while( Time.unscaledTime - startTime < delay );
+
+        action.Invoke();
+    }
+
+
     //Repetition---------------------------------------------------------------------------
     ///<summary>
     ///Repeat action the given number of times, with the given delay between each call
@@ -119,7 +139,7 @@ public static class GameHelper
     ///Repeat action the given number of times, with the given delay between each call. For each call, it sends a point, with each point separated by given distance, centered at the given point
     ///</summary>
     public static void ProgressiveRepeatAction(Action<float> action, int timesToRepeat, float delay, float separation, float centerPoint){
-        Timing.RunCoroutine(_ProgressiveRepeatAction(action, timesToRepeat, delay, separation, centerPoint));
+        Timing.RunCoroutine(_ProgressiveRepeatAction(action, timesToRepeat, delay, separation, centerPoint), null);
     }
     ///<summary>.
     ///Repeat action the given number of times, with the given delay between each call. For each call, it sends a point, with each point separated by given distance, centered at the given point. The calls stop if the gameobject given is destroyed
@@ -141,12 +161,6 @@ public static class GameHelper
     }
 
     ///<summary>
-    ///Continuously increments the value passed to the given action, from 0 to 1.
-    ///</summary>
-    public static void CallZeroToOne(Action<float> action, float time, ZeroToOneFunction zeroToOneFunction){
-        Timing.RunCoroutine(_CallZeroToOne(action, time, zeroToOneFunction));
-    }
-    ///<summary>
     ///Continuously increments the value passed to the given action, from 0 to 1. The calls stop if the gameobject given is destroyed
     ///</summary>
     public static void CallZeroToOne(Action<float> action, float time, ZeroToOneFunction zeroToOneFunction, GameObject cancelObject){
@@ -162,6 +176,41 @@ public static class GameHelper
             yield return Timing.WaitForOneFrame;
         }
         action.Invoke(1);
+    }
+
+    ///<summary>
+    ///Continuously increments the value passed to the given action, from 0 to 1. The calls stop if the gameobject given is destroyed
+    ///</summary>
+    public static void CallZeroToOneUnscaled(Action<float> action, float time, ZeroToOneFunction zeroToOneFunction, GameObject cancelObject){
+        Timing.RunCoroutine(_CallZeroToOneUnscaled(action, time, zeroToOneFunction).CancelWith(cancelObject));
+    }
+    private static IEnumerator<float> _CallZeroToOneUnscaled(Action<float> action, float time, ZeroToOneFunction zeroToOneFunction){
+        float t = 0;
+        while(t < time){
+            float modTime = zeroToOneFunction.Invoke(t/time);
+            action.Invoke(modTime);
+
+            t += Time.unscaledDeltaTime;
+            yield return Timing.WaitForOneFrame;
+        }
+        action.Invoke(1);
+    }
+
+    /// <summary>
+    /// Continuously calls the update function until the given gameobject. Functions as Update() would on a gameobject.
+    /// This shouldn't really be relied on all the time.
+    /// </summary>
+    /// <param name="update"></param>
+    /// <param name="cancelObject"></param>
+    public static void PseudoUpdate(Action update, GameObject cancelObject){
+        Timing.RunCoroutine(_PseudoUpdate(update).CancelWith(cancelObject));
+    }
+    private static IEnumerator<float> _PseudoUpdate(Action update){
+        while(true){
+            update.Invoke();
+
+            yield return Timing.WaitForOneFrame;
+        }
     }
 
 
@@ -190,6 +239,12 @@ public static class GameHelper
         obj.localPosition = newPos;
     }
     
+    /// <summary>
+    /// NOT IMPLEMENTED
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="newLocalPos"></param>
+    /// <param name="time"></param>
     public static void MoveOnPath(Transform obj, Vector2 newLocalPos, float time){
         Timing.RunCoroutine(_MoveOnPath(obj, newLocalPos, time).CancelWith(obj.gameObject));
     }
@@ -236,8 +291,8 @@ public static class GameHelper
     ///<summary>
     ///Shakes a given transform.
     ///</summary>
-    public static void Shake1(Transform obj, float time, float magnitude){
-        Timing.RunCoroutine(_Shake1(obj, time, magnitude, obj.localPosition).CancelWith(obj.gameObject));
+    public static void Shake1(Transform obj, float time, float magnitude, GameObject cancelObject = null){
+        Timing.RunCoroutine(_Shake1(obj, time, magnitude, obj.localPosition).CancelWith(obj.gameObject).CancelWith(cancelObject));
     }
     ///<summary>
     ///Shakes a given transform. The shaking dampens over time. The transform returns to the given position when it finishes
@@ -269,8 +324,8 @@ public static class GameHelper
     ///<summary>
     ///Shakes a given transform. The shaking dampens over time. The transform returns to the given position when it finishes
     ///</summary>
-    public static void Shake2(Transform obj, float time, float magnitude, Vector3 returnPos){
-        Timing.RunCoroutine(_Shake2(obj, time, magnitude, returnPos).CancelWith(obj.gameObject));
+    public static void Shake2(Transform obj, float time, float magnitude, Vector3 returnPos, GameObject cancelObject = null){
+        Timing.RunCoroutine(_Shake2(obj, time, magnitude, returnPos).CancelWith(obj.gameObject).CancelWith(cancelObject));
     }
     private static IEnumerator<float> _Shake2(Transform obj, float time, float magnitude, Vector3 returnPos) {
         float startX = returnPos.x;
@@ -354,6 +409,86 @@ public static class GameHelper
 
         spriteRenderer.size = newSize;
     }
-    
 
+
+
+    //GAME CHECKS
+
+    /// <summary>
+    /// Checks if the given collider is colliding with something in the gievn direction.
+    /// Assumes the collider is a rectangle
+    /// NOTE: Doesn't work well with irregularly shaped colliders or odd angles.
+    /// DEVNOTE: Change later to accept a new parameter, n, as the number of raycasts to use
+    /// </summary>
+    /// <param name="collider2D"></param>
+    /// <param name="rayDistance"></param>
+    /// <returns></returns>
+    public static bool SimpleCollisionCheck(Collider2D collider2D, Vector2 direction, float rayDistance = .1f){
+        direction = Vector3.Normalize(direction);
+
+        Vector2 halfBounds = collider2D.bounds.size / 2;
+        Vector2 mid_pos = (Vector2)collider2D.transform.position + collider2D.offset*(Vector2)collider2D.transform.localScale + (halfBounds * direction);
+        Vector2 perpendicular = new Vector2(direction.y, 0f - direction.x);
+        
+        //get layers that this entity can collide with
+        LayerMask collisionLayers = Physics2D.GetLayerCollisionMask(collider2D.gameObject.layer);
+        
+        //Check each edge of the collider
+        int[] ORDER = {-1, 1, 0};
+        foreach(int i in ORDER){
+            
+            Vector2 newPos = mid_pos + i*halfBounds*perpendicular;
+
+            RaycastHit2D[] rays = Physics2D.RaycastAll(newPos, direction, rayDistance, collisionLayers);
+            //if there were no collisions, continue search
+            if(rays.Length == 0)
+                continue;
+            //if the first collision was this collider
+            if(rays[0].collider == collider2D){
+                //if there are more colliders than this one, return true
+                if(rays.Length > 1){
+                    return true;
+                }
+            }
+            //if not return true
+            else
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Returns an array of Raycast hits from the given collider.
+    /// Only hits colliders that the collider can collide with, and isn't itself
+    /// DEVNOTE: Change later to accept a new parameter, n, as the number of raycasts to use
+    /// </summary>
+    /// <param name="collider2D"></param>
+    /// <param name="direction"></param>
+    /// <param name="rayDistance"></param>
+    /// <returns></returns>
+    public static RaycastHit2D[] CollisionsCheck(Collider2D collider2D, Vector2 direction, float rayDistance = .1f){
+        direction = Vector3.Normalize(direction);
+        
+        Vector2 halfBounds = collider2D.bounds.size / 2;
+        Vector2 mid_pos = (Vector2)collider2D.transform.position + collider2D.offset*(Vector2)collider2D.transform.localScale + (halfBounds * direction);
+        Vector2 perpendicular = new Vector2(direction.y, 0f - direction.x);
+        
+        //get layers that this entity can collide with
+        LayerMask collisionLayers = Physics2D.GetLayerCollisionMask(collider2D.gameObject.layer);
+        
+        RaycastHit2D[] rays = Physics2D.RaycastAll(mid_pos, direction, rayDistance, collisionLayers);
+
+        List<RaycastHit2D> raysList = new List<RaycastHit2D>(rays);
+
+        for(int i = 0; i < raysList.Count; i++){
+            if(raysList[i].collider == collider2D){
+                raysList.RemoveAt(i);
+                break;
+            }
+        }
+
+
+        return raysList.ToArray();;
+    }
 }

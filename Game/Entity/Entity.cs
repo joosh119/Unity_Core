@@ -2,32 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[RequireComponent(typeof(Rigidbody2D))]
-//[RequireComponent(typeof(Collider2D))]
-//[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 public class Entity : MonoBehaviour
 {
-    //Components
-    public Rigidbody2D rb;
-    public Collider2D entityCollider;
-
-
-    //Modifiers
+    //EDITOR VARIABLES
     [SerializeField]private EntityData entityData;
     [SerializeField]private int identifier;
-    public int GetID(){
-        return identifier;
-    }
-
+    public int _identifier { get{ return identifier; }}
 
     public bool invincible;
-    public int maxHealth;
 
+    //COMPONENTS
+    private Rigidbody2D rb;
+    private Collider2D entityCollider;
 
-
-
-
-    //private variables
+    //PRIVATE VARIABLES
     private float timeOfLastHit;
     public int currentHealth;
 
@@ -37,15 +27,15 @@ public class Entity : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        currentHealth = maxHealth;
-        //spriteRenderer = GetComponent<SpriteRenderer>();
-        //rb = GetComponent<Rigidbody2D>();
-        //entityCollider = GetComponent<Collider2D>();
+        rb = GetComponent<Rigidbody2D>();
+        entityCollider = GetComponent<Collider2D>();
+
+        currentHealth = entityData.maxHealth;
     }
 
 
 
-    [SerializeField]public UltEvents.UltEvent<Entity> _OnDamageEvent;
+    [SerializeField]public UltEvents.UltEvent<int> _OnDamageEvent;
     public void Damage(int damage){
 
         if(Time.time - timeOfLastHit > entityData.iTime  &&  !invincible){
@@ -57,7 +47,7 @@ public class Entity : MonoBehaviour
                 currentHealth = 0;
 
 
-            _OnDamageEvent.Invoke(this);
+            _OnDamageEvent.Invoke(damage);
 
 
             if(currentHealth == 0)
@@ -72,6 +62,11 @@ public class Entity : MonoBehaviour
             Destroy(gameObject);
 
         _OnDeathEvent.Invoke(this);
+    }
+
+
+    public void DestroySelf(){
+        Destroy(gameObject);
     }
 
 
@@ -103,7 +98,7 @@ public class Entity : MonoBehaviour
 
 
     public float GetHealthRatio(){
-        return ((float)currentHealth) / maxHealth;
+        return ((float)currentHealth) / entityData.maxHealth;
     }
 
 }

@@ -6,8 +6,7 @@ public class ElasticFollowTransform : MonoBehaviour
 {
     [SerializeField]private float followSpeed;
     public Transform transformToFollow;
-
-    public Transform thisTransform;
+    private Transform thisTransform;
 
     void Awake()
     {

@@ -48,7 +48,7 @@ public class ParticleEntity : MonoBehaviour
 
 
 
-    [SerializeField]public UltEvents.UltEvent<ParticleEntity> _OnDamageEvent;
+    [SerializeField]public UltEvents.UltEvent<int> _OnDamageEvent;
     public void Damage(int damage){
         if(Time.time - timeOfLastHit > entityData.iTime  &&  !invincible){
             timeOfLastHit = Time.time;
@@ -79,7 +79,7 @@ public class ParticleEntity : MonoBehaviour
             //Shake
             GameHelper.Shake2(Camera.main.transform, entityData.damageCamShakeTime, entityData.damageCamShakeMagnitude, Vector2.zero);
 
-            _OnDamageEvent.Invoke(this);
+            _OnDamageEvent.Invoke(damage);
 
 
 

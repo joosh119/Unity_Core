@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyWalkAI : MonoBehaviour
 {
-    [SerializeField]private Entity entity;
+    [SerializeField]private Rigidbody2D rb;
 
     [SerializeField]private float walkForce;
     [SerializeField]private Vector2 startDirection;
@@ -21,9 +21,9 @@ public class EnemyWalkAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        entity.rb.AddForce(walkForce* Time.deltaTime * currentDirection);
+        rb.AddForce(walkForce* Time.deltaTime * currentDirection);
 
-        float vX = entity.rb.velocity.x;
+        float vX = rb.velocity.x;
         //if it has been stopped
         if(Mathf.Abs(vX) > minSpeed){
             hasReachedMinimumSpeed = true;
@@ -31,10 +31,11 @@ public class EnemyWalkAI : MonoBehaviour
         else if(Mathf.Abs(vX) < minSpeed && hasReachedMinimumSpeed){
             currentDirection *= -1;
 
+            float absScale = Mathf.Abs(transform.localScale.x);
             if(vX > 0)
-                entity.spriteRenderer.flipX = true;
+                transform.localScale = new Vector2(-absScale, transform.localScale.y);
             else
-                entity.spriteRenderer.flipX = false;
+                transform.localScale = new Vector2(-absScale, transform.localScale.y);
 
 
                 
