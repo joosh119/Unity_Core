@@ -5,16 +5,7 @@ This core is heavily targeted towards 2D game development.
 
 **NOTE**: This repository is gradually updated as I use these scripts, so there may be various issues with them.
 
-Created by TheGreatExpanse (https://www.youtube.com/@The_Great_Expanse)
-
-
-# Dependencies:
-- UltEvents - https://assetstore.unity.com/packages/tools/gui/ultevents-111307
-- More Effective Coroutines - https://assetstore.unity.com/packages/tools/animation/more-effective-coroutines-free-54975
-
-
-
-# CONTENTS:
+# Contents:
 /**Audio**  
  Contains Audio related scripts.  
 - *AudioData.cs*  
@@ -78,9 +69,13 @@ Contains miscellaenous non-script assets.
 /**Rendering**  
 Contains various shaders, mainly aimed at 2D use.  
 
+# Dependencies:
+- UltEvents - https://assetstore.unity.com/packages/tools/gui/ultevents-111307
+- More Effective Coroutines - https://assetstore.unity.com/packages/tools/animation/more-effective-coroutines-free-54975
 
 # Required Editor Setup:
 - Tags:  
   - Tag all Entities as 'Entity'  
-  - Tag all terrain as 'Terrain'  
+  - Tag all terrain as 'Terrain'
 
+Not all of these are required for every script.
