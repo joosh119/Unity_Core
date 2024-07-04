@@ -1,0 +1,14 @@
+Things to be worked on:
+	-Document code better
+	-ParticleEmitter
+	-Animation system
+	UI:
+	 -Title screen
+	 -Pause screen
+	
+	-Actually make the audio manager
+	-Add method in game helper that instantiates prefab as child of parent, while keeping scale
+	-Give OnTrigger a compare tag option
+
+Done(ish):
+
